@@ -1,0 +1,68 @@
+{% extends 'main/base.html' %}
+
+{% block title %} Home Page {% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %} 
+	<h1 style='text-align: center;'>{{client.name|capfirst}}'s Vaccination History </h1>
+	<form method="POST" action="#">
+		{% csrf_token %}
+		{{form|crispy}}
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Client</th>
+					<th scope="col">Vacxin</th>
+					<th scope="col">Inject date</th>
+					<th scope="col">Inject date next time</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			</tbody>
+		
+		{% for his in vacxinHistory %}
+			<div class="input-gourp mb-3">
+				<div class="input-gourp-prepend">
+					<div class="input-gourp-text">
+						<tr>
+							<th scope="row">{{client.name}}</th>
+							<td>{{his.vacxin.name}}</td>
+							<td>{{his.inject_date}}</td>
+							<td>{{his.inject_next_time}}</td>
+							{% if user.is_superuser %}
+								<td><button type="submit" value="{{his.id}}" name="his_delete" class="btn btn-danger">Delete</button></td>
+							{% endif %}
+						</tr>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+
+			{% if user.is_superuser %}
+				<tr>
+					<th scope="row">{{client.name}}</th>
+					<td>
+						<div class="input-group mb-3">
+						  	<select class="custom-select" id="inputGroupSelect01" name="VacxinSelected">
+						  		{% if client.vacxinhistory_set.first == None %}
+						  			{% for vacxin in vacxins %}
+							    		<option value="{{vacxin.id}}">{{vacxin.name|capfirst}}</option>
+							    	{% endfor %}
+						  		{% else %}
+									<option value="{{client.vacxinhistory_set.first.vacxin.id}}">{{client.vacxinhistory_set.first.vacxin|capfirst}}</option>
+						  		{% endif %}
+						  	</select>
+						</div>
+					</td>
+					<td><input type="date" class="form-control" name="newName"></td>
+
+					<td><input type="date" class="form-control" name="newDOB"></td>
+					<td><button type="submit" name="Injected_add" value="{{client.id}}" class="btn btn-success">Add</button></td>
+				</tr>
+			{% endif %}
+
+		</table>
+		<center><strong>Total Fee: {{totalPrice}}</strong></center>
+	</form>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'main/base.html' %}
+
+{% block title %} Home Page {% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %} 
+	<form method="POST" action="#">
+		{% csrf_token %}
+		{{form|crispy}}
+		<table class="table">
+			<thread>
+				<tr>
+					<th scope="col">ID</th>
+					<th scope="col">Name</th>
+					<th scope="col">Sex</th>
+					<th scope="col">DOB</th>
+					<th scope="col">Address</th>
+					<th scope="col">Phone Number</th>
+					<th scope="col">Inject</th>
+					<th scope="col"></th>
+				</tr>
+			</thread>
+			</tbody>
+	
+		{% for client in clients %}
+			<div class="input-gourp mb-3">
+				<div class="input-gourp-prepend">
+					<div class="input-gourp-text">
+						<tr>
+							<th scope="row">{{client.id}}</th>
+							<td><input type="text" value="{{client.name}}" class="form-control" name="n{{client.id}}"></td>
+							<td>
+							{% if client.sex == True %}
+								<input type="radio" value="Male" name="r{{client.id}}" checked> Male
+								<input type="radio" value="Female" name="r{{client.id}}" > Female
+							{% else %}
+								<input type="radio" value="Male" name="r{{client.id}}" > Male
+								<input type="radio" value="Female" name="r{{client.id}}" checked> Female
+							{% endif %}
+							</td>
+							<td>{{client.DOB}}</td>
+							<td><input type="text" value="{{client.address}}" class="form-control" name="adr{{client.id}}"></td>
+							<td><input type="text" value="{{client.phone_number}}" class="form-control" name="pn{{client.id}}"></td>
+							<td><button type="submit" value="{{client.id}}" name="C_view" class="btn btn-secondary">View</button></td>
+							{% if user.is_superuser %}
+								<td><button type="submit" value="{{client.id}}" name="C_delete" class="btn btn-danger">Delete</button></td>
+							{% endif %}
+						</tr>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+		</table>
+		{% if user.is_superuser %}
+			<button type="submit" name="C_save" value="save" class="btn btn-success">Save</button>
+		{% endif %}
+	</form>
+{% endblock %}

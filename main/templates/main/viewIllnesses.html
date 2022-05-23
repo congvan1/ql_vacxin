@@ -1,0 +1,60 @@
+{% extends 'main/base.html' %}
+
+{% block title %} Home Page {% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %} 
+	<h1 style='text-align: center;text-transform: uppercase;'>{{vacxin.name}} </h1>
+
+	<form method="POST" action="#">
+		{% csrf_token %}
+		{{form|crispy}}
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Illnesses name</th>
+					<th scope="col">Description</th>
+					<th scope="col">Prevention</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			</tbody>
+		
+		{% for ill in vacxin_ill %}
+			<div class="input-gourp mb-3">
+				<div class="input-gourp-prepend">
+					<div class="input-gourp-text">
+						<tr>
+							<th><input type="text" value="{{ill.name}}" class="form-control" name="name{{ill.id}}"></th>
+							<th scope="row"><input type="text" value="{{ill.description}}" class="form-control" name="desc{{ill.id}}"></th>
+							<th scope="row"><input type="text" value="{{ill.prevention}}" class="form-control" name="preve{{ill.id}}"></th>
+							{% if user.is_superuser %}
+							<td><button type="submit" value="{{ill.id}},{{vacxin.id}}" name="Ill_delete" class="btn btn-danger">Delete</button></td>{% endif %}
+						</tr>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+			{% if user.is_superuser %}
+				<tr>
+					<td colspan='4' width="100%">
+						<div class="input-group">
+						  	<select class="custom-select" name="VacxinSelected">
+					  			{% for ill in illnesses %}
+						    		<option value="{{ill.id}}">{{ill.name|capfirst}}</option>
+						    	{% endfor %}
+						  	</select>
+						  	<div class="input-group-append">
+						    	<button class="btn btn-outline-secondary" type="submit" name="newIllnesses" value="{{vacxin.id}}" class="btn btn-success" >Add</button>
+						  	</div>
+						</div>
+					</td>
+				</tr>
+			{% endif %}
+		</table>
+		{% if user.is_superuser %}
+			<button type="submit" name="Ill_save" value="{{vacxin.id}}" class="btn btn-success">Save</button>
+		{% endif %}
+	</form>
+{% endblock %}
